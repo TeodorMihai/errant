@@ -5,6 +5,7 @@ import string
 
 # Some global variables
 NLP = None
+lang = None
 CONTENT_POS = [POS.ADJ, POS.ADV, POS.NOUN, POS.VERB]
 
 ### FUNCTIONS ###
@@ -203,11 +204,15 @@ def get_edits_group_all(edits):
 # Get all possible lemmas for current token. By checking all POS, we increase
 # the chance that there will be a match.
 def get_lemmas(token):
-	return set([
-	NLP.vocab.morphology.lemmatize(POS.ADJ, token.orth, NLP.vocab.morphology.tag_map),
-	NLP.vocab.morphology.lemmatize(POS.ADV, token.orth, NLP.vocab.morphology.tag_map),
-	NLP.vocab.morphology.lemmatize(POS.NOUN, token.orth, NLP.vocab.morphology.tag_map),
-	NLP.vocab.morphology.lemmatize(POS.VERB, token.orth, NLP.vocab.morphology.tag_map)])
+	global lang
+	if lang == 'ro':
+		return set([token.lemma_])
+	else:
+		return set([
+		NLP.vocab.morphology.lemmatize(POS.ADJ, token.orth, NLP.vocab.morphology.tag_map),
+		NLP.vocab.morphology.lemmatize(POS.ADV, token.orth, NLP.vocab.morphology.tag_map),
+		NLP.vocab.morphology.lemmatize(POS.NOUN, token.orth, NLP.vocab.morphology.tag_map),
+		NLP.vocab.morphology.lemmatize(POS.VERB, token.orth, NLP.vocab.morphology.tag_map)])
 
 def lemma_cost(A, B):
 	# Use 0.499 instead of 0.5 to prefer alignments having substitutions
@@ -262,9 +267,11 @@ def levSubstitution(a,b,c,d):
 # Input 4: Command line args.
 # Output: A list of lists. Each sublist is an edit of the form:
 # edit = [orig_start, orig_end, cat, cor, cor_start, cor_end]
-def getAutoAlignedEdits(orig, cor, spacy, args):
+def getAutoAlignedEdits(orig, cor, spacy, args, language=None):
 	# Save the spacy object globally.
 	global NLP
+	global lang
+	lang = language
 	NLP = spacy
 	# Get a list of strings from the spacy objects.
 	orig_toks = [tok.text for tok in orig]

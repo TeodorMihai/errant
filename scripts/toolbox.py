@@ -92,14 +92,19 @@ def processEdits(edits):
 # Input 1: A list of token strings in a sentence.
 # Input 2: A preloaded Spacy processing object.
 # Annotate tokens with POS, lemma and parse info.
-def applySpacy(input_sent, nlp, args, treetagger=None):
+def applySpacy(input_sent, nlp, args, treetagger=None, lang=None):
 	# Convert tokens to spacy tokens and POS tag and parse.
-	if args.tok:
-		sent = nlp(input_sent)
+	if lang is not None:
+		if lang == 'ro':
+			from rb.core.lang import Lang
+			sent = nlp.parse(input_sent, Lang.RO)
 	else:
-		sent = Doc(nlp.vocab, input_sent.split())
-		nlp.tagger(sent)
-		nlp.parser(sent)
+		if args.tok:
+			sent = nlp(input_sent)
+		else:
+			sent = Doc(nlp.vocab, input_sent.split())
+			nlp.tagger(sent)
+			nlp.parser(sent)
 
 	if treetagger:
 		import treetaggerwrapper
