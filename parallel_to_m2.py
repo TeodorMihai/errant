@@ -3,7 +3,6 @@ import os
 import spacy
 import scripts.align_text as align_text
 import scripts.toolbox as toolbox
-
 def main(args):
 	# Get base working directory.
 	basename = os.path.dirname(os.path.realpath(__file__))
@@ -125,5 +124,5 @@ if __name__ == "__main__":
 	parser.add_argument("-ann", help="Output automatic annotation.", action="store_true")
 	parser.add_argument("-stats", help="Print stats", action="store_true")
 	args = parser.parse_args()
-	# Run the program.
 	main(args)
+	

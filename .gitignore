@@ -1,1 +1,3 @@
 *.pyc
+resources/ro/*
+resources
