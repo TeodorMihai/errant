@@ -76,6 +76,12 @@ the UTF-8 German model saved as
 
 Alternatively, update the path to TreeTagger in `parallel_to_m2.py` and `m2_to_m2.py`.
 
+
+## Additional software for Romanian:
+Wordlist for Romanian is the hunspell wordlist.
+Readerbench is the only additional software needed for Romanian:
+`pip install rbpy-rb` (teste for version 0.6.6)
+
 # Usage
 
 Three main scripts are provided with ERRANT: `parallel_to_m2.py`, `m2_to_m2.py` and `compare_m2.py`. 
@@ -88,10 +94,10 @@ Three main scripts are provided with ERRANT: `parallel_to_m2.py`, `m2_to_m2.py` 
 	 python3 parallel_to_m2.py -orig <orig_file> -cor <cor_file> -out <out_m2>
 	 ```
 
-    The script has been extended to work with German alongside English including the options:
+    The script has been extended to work with German and Romanian alongside English including the options:
 
     ```
-    -lang {en,de}         Input language. Currently supported: en (default), de
+    -lang {en,de, ro}         Input language. Currently supported: en (default), de
     -tok                  Tokenize input using spacy tokenizer.
     -ann                  Output automatic annotation.
     ```
@@ -104,7 +110,8 @@ Three main scripts are provided with ERRANT: `parallel_to_m2.py`, `m2_to_m2.py` 
 	 python3 m2_to_m2.py {-auto|-gold} m2_file -out <out_m2>
 	 ```
 
-    The script has been extended to work with German alongside English including the options:
+    The script has been extended to work with German alongside English including the options  
+    (could be extended for Romanian in the future):  
 
     ```
     -lang {en,de}         Input language. Currently supported: en (default), de
@@ -156,7 +163,7 @@ Finally, any gold edit that changes A -> A or Ø -> Ø is labelled Unknown (UNK)
 
 A brief description of some of the rules used to classify error types is described in Section 3.1 of the ERRANT paper. In this section, we describe all the rules in more detail. Although we present the rules for each error type individually, the reader should be aware that some rules interract and there are several constraints on rule order. Rule order is discussed at the end of this section.
 
-The following sections present the error type classification for English (from the ERRANT paper) and German (added by Adriane Boyd).
+The following sections present the error type classification for English (from the ERRANT paper), German (added by Adriane Boyd) and Romanian.
 
 ## English
 
@@ -455,6 +462,10 @@ MORPH is used for other cases with the same lemma or same stem but different POS
 As mentioned at the start of this section, the above rules have been described in isolation when in fact they sometimes interact and may be carefully ordered.
 
 Ultimately, since the interactions between our rules are very difficult to describe in words, we refer the reader to the code for more information concerning rule order. Specifically, look at `getOneSidedType` and `getTwoSidedType` in `scripts/cat_rules_de.py`. In general, the rules presented in this section mirror the order they occur in these functions.
+## Romanian 
+
+THe romanian categories are very similar to the German ones. The only difference is the elimination of CONTR and German-specific STTS tag TRUNC.
+Worlist for Romanian is provided by [Hunspell Romanian wordlist](https://github.com/titoBouzout/Dictionaries):
 
 # MIT License
 

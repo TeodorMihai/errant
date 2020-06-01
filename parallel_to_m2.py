@@ -54,7 +54,8 @@ def main(args):
 	print("Processing files...")
 	nr_edits, nr_edits_per_sentence = 0, 0
 	length_edits_per_sentence, length_edits = 0, 0
-	nr_edits_per_category = {}
+	nr_edits_per_category = {'POS': 0}
+	total_tokens = 0
 	
 	# Open the original and corrected text files.
 	with open(args.orig) as orig, open(args.cor) as cor:
@@ -62,12 +63,13 @@ def main(args):
 		count_sentences = 0
 		for orig_sent, cor_sent in zip(orig, cor):
 			count_sentences += 1
+			total_tokens += len(orig_sent.split(' '))
 			# Markup the parallel sentences with spacy
 			proc_orig = toolbox.applySpacy(orig_sent, nlp, args, treetagger, lang=lang)
 			proc_cor = toolbox.applySpacy(cor_sent, nlp, args, treetagger, lang=lang)
 			# Write the original sentence to the output m2 file.
 			proc_orig_tokens = [token.text for token in proc_orig]
-			out_m2.write("S "+ " ".join(proc_orig_tokens)+"\n")
+			out_m2.write("S "+ " ".join(proc_orig_tokens))
 			# Identical sentences have no edits, so just write noop.
 			if orig_sent.strip() == cor_sent.strip():
 				out_m2.write("A -1 -1|||noop|||-NONE-|||REQUIRED|||-NONE-|||0\n")
@@ -87,7 +89,10 @@ def main(args):
 					length_edits += length_edit
 					length_edits_per_sentence += length_edit
 					# Give each edit an automatic error type.
-					cat = cat_rules.autoTypeEdit(auto_edit, proc_orig, proc_cor, word_list, tag_map, nlp, stemmer)
+					cat = cat_rules.autoTypeEdit(auto_edit, proc_orig, proc_cor, word_list, tag_map, nlp, stemmer)[2:]
+					if not (cat == 'MORPH' or cat == 'ORTH' or cat == 'SPELL'
+						 or cat == 'ORDER' or cat == 'CONTR' or cat == 'OTHER'):
+						 nr_edits_per_category['POS'] += 1
 					nr_edits_per_category[cat] = 1 + nr_edits_per_category[cat] if cat in nr_edits_per_category else 1
 					auto_edit[2] = cat
 					# Write the edit to the output m2 file.
@@ -112,7 +117,7 @@ if __name__ == "__main__":
 	parser.add_argument("-orig", help="The path to the original text file.", required=True)
 	parser.add_argument("-cor", help="The path to the corrected text file.", required=True)
 	parser.add_argument("-out",	help="The output filepath.", required=True)						
-	parser.add_argument("-lang", choices=["en", "de", "ro"], default="en", help="Input language. Currently supported: en (default), de\n")
+	parser.add_argument("-lang", choices=["en", "de", "ro"], default="en", help="Input language. Currently supported: en (default), de, ro\n")
 	parser.add_argument("-lev",	help="Use standard Levenshtein to align sentences.", action="store_true")
 	parser.add_argument("-merge", choices=["rules", "all-split", "all-merge", "all-equal"], default="rules",
 						help="Choose a merging strategy for automatic alignment.\n"
