@@ -3,6 +3,7 @@ import os
 import spacy
 import scripts.align_text as align_text
 import scripts.toolbox as toolbox
+
 def main(args):
 	# Get base working directory.
 	basename = os.path.dirname(os.path.realpath(__file__))
@@ -102,7 +103,7 @@ def main(args):
 
 		nr_edits_per_sentence /= count_sentences
 		length_edits_per_sentence /= count_sentences
-		length_edits /= nr_edits
+		length_edits /= (nr_edits + 1e-6)
 		if args.stats:
 			print(f'nr_edits_per_sent: {nr_edits_per_sentence}')
 			print(f'length_edits_per_sentence: {length_edits_per_sentence}')
